@@ -152,50 +152,5 @@ The sidebar sends its choices as named parameters. "All" is sent as `NULL`, whic
 | `10_feedback_themes.sql` | What people commented on | GROUP BY theme, `SUM(COUNT(*)) OVER ()` for share |
 | `11_upcoming_pacing.sql` | Is each upcoming event selling fast enough? | `ROW_NUMBER()` picks the three most recent similar events; a projected range |
 
-Queries 01 to 07 answer the original questions. 08 to 11 exist so the headline numbers, sales curves, feedback chart and pacing view also come from SQL, not pandas.
 
-## What broke, and what changed
 
-The project was reviewed by trying to break it. Every headline number was checked by hand in pandas. The data was rebuilt under 40 random seeds, and every page was loaded under every filter. It was fed awkward databases, scaled up 41 times, and opened from awkward folders. Five things broke. Each fix has a test in `tests/test_break_points.py` that recreates the original failure.
-
-| Problem | Fix | Result |
-|---|---|---|
-| 120 tickets for an event that hadn't happened counted as no-shows. Early Bird no-shows jumped from 14.6% to 23.1%, and an event with no sales crashed its page. | Turnout stays blank until an event happens. Upcoming events get a pacing view instead of a verdict. | 123 pre-sold tickets change nothing: Early Bird stays at 14.6%. The no-sales event says "no sales yet". |
-| A new city was rejected. Website sign-ups with no sales lead vanished from the funnel (680 of 4,766). The banner always said "simulated", and a missing database was quietly replaced with fake data. | A CSV loader that checks every row, open text fields, a funnel that keeps every channel, and a banner that reads the data source. | New cities load. 0 tickets missing from the funnel. Real data is never overwritten or swapped out. |
-| Break-even compared people who came with a target based on tickets sold. In 5 of 40 test worlds a profitable event was called a loss. | Break-even is counted in paid tickets, because no-shows paid too. | 0 contradictions in 40 worlds. |
-| With 328 events the Overview was 22 screens long, and one table was a 9.6 MB page. | Long lists show 12 events, with a caption saying exactly which. Tables show 200 rows a page. | 330 events: 4 screens. The table is 0.1 MB. |
-| The database wouldn't open from a folder like "Projects #2". | The file path is encoded properly before opening. | #, ?, %, spaces and Arabic folder names all work. |
-
-### Still not handled
-
-- Takeaway lines compare channels without checking sample size. For the Nursing Symposium alone, the WhatsApp vs Cold Call gap (15.4 points) could be anywhere from -1.6 to +32.4. Across all events the gap is real.
-- There's no marketing spend in the data, so "move effort to WhatsApp" can't be judged on cost.
-- Pacing assumes this year sells like the last three editions in the same city. It's shown as a range for that reason.
-- The two no-show views overlap, because ticket type mostly follows booking date.
-- All prices are in AED, Seoul included. There's no login. Printing gives dark pages.
-
-## The look
-
-Warm near-black, brushed silver, 1px hairlines and a little matte grain. No accent colour; a test keeps it that way. The one thing on a page that needs attention is polished silver and named in words.
-
-Bodoni Moda for headlines and big numbers, Archivo for text, JetBrains Mono for tables and axes. All three are bundled, so it looks the same offline. Charts share one template: AED on money, one decimal on percentages, a title and one line on what to look at.
-
-Why `views/` and not `pages/`: Streamlit treats a `pages/` folder specially. On a fresh server, a link straight to `/event_deep_dive` would skip `app.py`, and with it the styling and the data-source note. A test keeps it that way.
-
-## Talking points
-
-Two sentences per query, for explaining it out loud.
-
-| Query | What to say |
-|---|---|
-| 01 Event summary | One row per event with tickets, revenue, turnout and status. It divides by `COUNT(attended)`, which only counts known outcomes, so next year's tickets never show up as no-shows. |
-| 02 Channel funnel | Leads and tickets live in different tables, so each gets its own CTE, and the channel lists are joined with a UNION first. Website sign-ups with no sales lead still count instead of falling out. |
-| 03 No-show rates | `julianday()` gives days between booking and the event, CASE puts them in buckets, and UNION ALL stacks the two views so one query feeds two charts. Tickets with unknown turnout are left out. |
-| 04 Growth by city | LAG puts last month's count on the same row, per city. Growth is only worked out between consecutive full months with at least 20 registrations, because a gap, a tiny first month or the current part-month would give nonsense. |
-| 05 Top countries | ROW_NUMBER ranks countries inside each event and keeps the top three. A windowed SUM turns each count into a share, which is what you'd use to decide where to spend on visas or partner societies. |
-| 06 Break-even | Break-even is the number of paid tickets needed to cover fixed cost after any recorded sponsorship, since no-shows paid too. An earlier version compared people who came, and it called profitable events losses in 5 of 40 test worlds. |
-| 07 Feedback by ticket type | One CTE ranks themes inside each ticket type, another gets the average rating and the share about price, and they join on rank one. It separates a price complaint from a quality complaint, which changes who should act. |
-| 08 Headline numbers | Events, tickets and survey answers are each totalled on their own, then cross-joined. Joining feedback to tickets first would make revenue depend on who filled in the survey. |
-| 09 Registration curve | A running total turns daily sales into a curve against capacity. The pacing view is built on it. |
-| 10 Feedback themes | GROUP BY theme, with `SUM(COUNT(*)) OVER ()` for each theme's share in one pass. Share plus average rating shows how often a topic comes up and how unhappy people are when it does. |
-| 11 Upcoming pacing | For each upcoming event, it finds the three most recent finished events in the same city and checks how much of their final sales they had at the same number of days out. Sold so far divided by that share gives a projection, and the fastest and slowest of the three give the range. |
