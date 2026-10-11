@@ -1,0 +1,7 @@
+# Events Analytics: concept demo. Python 3.11+.
+# generate_data.py uses only the standard library; these are for the app,
+# the brief and the tests. numpy comes in via pandas.
+pandas==3.0.5
+plotly==7.1.0
+streamlit==1.65.0
+pytest==9.1.1

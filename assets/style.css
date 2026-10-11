@@ -1,0 +1,234 @@
+/* Events Analytics: concept demo
+   All custom styling lives in this one file.
+
+   Warm near-black, brushed silver, 1px hairlines, matte grain. No accent
+   colour: the one thing that needs attention is drawn in polished silver
+   and named in words. A sharp serif for headlines and big numbers, a
+   grotesk for prose, a mono for tables and axes. Square corners, no tilt,
+   no motion. Spacing is generous and uneven. */
+
+/* Fonts are bundled in static/fonts (Latin subsets, SIL Open Font License),
+   so the dashboard looks the same offline. */
+@font-face {
+  font-family: "Archivo"; src: url("/app/static/fonts/Archivo-Variable.woff2") format("woff2");
+  font-weight: 100 900; font-stretch: 62% 125%; font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono"; src: url("/app/static/fonts/JetBrainsMono-Variable.woff2") format("woff2");
+  font-weight: 100 800; font-display: swap;
+}
+@font-face {
+  font-family: "Bodoni Moda"; src: url("/app/static/fonts/BodoniModa-Variable.woff2") format("woff2");
+  font-weight: 400 900; font-display: swap;
+}
+@font-face {
+  font-family: "Bodoni Moda"; src: url("/app/static/fonts/BodoniModa-Italic-Variable.woff2") format("woff2");
+  font-weight: 400 900; font-style: italic; font-display: swap;
+}
+
+:root {
+  --night: #12100E;          /* warm near-black, matte */
+  --night-deep: #0E0C0B;     /* sidebar, code */
+  --raised: #1A1816;         /* inputs */
+  --silver: #D6D3CE;         /* brushed silver: body text and marks */
+  --bright: #F0EEEA;         /* polished silver: the one thing to look at */
+  --dull: #9A9792;           /* secondary text */
+  --faint: #6E6B67;          /* ticks, sources */
+  --hairline: #2E2B28;       /* every rule is 1px of this */
+
+  --serif: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+  --sans: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---- base ------------------------------------------------------------------ */
+html, body, .stApp, .stMarkdown, button, input, select, textarea, [data-testid="stSidebar"] {
+  font-family: var(--sans);
+  color: var(--silver);
+}
+.stApp { background: var(--night) var(--grain); }
+
+#MainMenu, footer, [data-testid="stDecoration"], [data-testid="stStatusWidget"],
+[data-testid="stToolbarActions"], [data-testid="stAppDeployButton"] { display: none !important; }
+header[data-testid="stHeader"] { background: transparent; }
+
+.block-container, [data-testid="stMainBlockContainer"] {
+  max-width: 1180px;
+  padding: 40px 56px 96px;
+}
+[data-testid="stVerticalBlock"] { gap: 20px; }
+
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+  outline: 1px solid var(--bright); outline-offset: 3px;
+}
+
+/* ---- wordmark and the data-source note ----------------------------------------- */
+.ea-frame {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
+  padding-bottom: 14px; border-bottom: 1px solid var(--hairline);
+}
+.ea-frame__mark {
+  font-family: var(--serif); font-optical-sizing: auto; font-size: 21px; font-weight: 500;
+  letter-spacing: .01em; color: var(--bright);
+}
+.ea-frame__kind { font-family: var(--mono); font-size: 11px; color: var(--dull); }
+
+.ea-notice {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px;
+  font-family: var(--mono); font-weight: 300; font-size: 11.5px; line-height: 1.6; color: var(--dull);
+}
+.ea-notice__tag { color: var(--silver); font-weight: 400; }
+
+/* ---- page header: one large serif title, nothing competing ------------------------ */
+.ea-page-head {
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 32px;
+  margin: 56px 0 8px;
+}
+.ea-annot { font-family: var(--mono); font-size: 11px; color: var(--faint); margin-bottom: 14px; }
+.ea-page-head h1 {
+  margin: 0; padding: 0;
+  font-family: var(--serif); font-optical-sizing: auto; font-size: 64px; font-weight: 400;
+  letter-spacing: -.015em; line-height: 1; color: var(--bright);
+}
+.ea-page-head p { font-size: 15px; line-height: 1.55; color: var(--dull); margin: 18px 0 0; max-width: 58ch; }
+.ea-page-head__stamp {
+  font-family: var(--mono); font-weight: 300; font-size: 12px; line-height: 1.7;
+  color: var(--dull); text-align: right; white-space: nowrap;
+}
+
+/* The one personal line. */
+.ea-aside {
+  font-family: var(--serif); font-style: italic; font-size: 19px; color: var(--dull);
+  margin: -2px 0 24px;
+}
+
+/* ---- sections: a hairline and a quiet italic label --------------------------------- */
+.ea-section {
+  display: flex; align-items: baseline; gap: 16px; margin-top: 64px;
+  font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--dull);
+}
+.ea-section i { flex: 1; height: 1px; background: var(--hairline); align-self: center; }
+.ea-section--side { margin-top: 8px; font-size: 14px; }
+
+/* ---- headline numbers: set in type, divided by hairlines, not boxed ------------------ */
+.ea-kpis { display: flex; flex-wrap: wrap; row-gap: 28px; margin-top: 8px; }
+.ea-kpi {
+  flex: 1 1 150px; min-width: 0; padding: 2px 28px 0 0; margin-right: 28px;
+  border-right: 1px solid var(--hairline);
+}
+.ea-kpi:last-child { border-right: none; margin-right: 0; }
+.ea-kpi:first-child { flex-grow: 1.5; }
+.ea-kpi__label { font-size: 12.5px; color: var(--dull); }
+.ea-kpi__value {
+  font-family: var(--serif); font-optical-sizing: auto; font-weight: 400;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-size: 34px; line-height: 1.1; color: var(--silver); margin-top: 10px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ea-kpi:first-child .ea-kpi__value { font-size: 48px; line-height: 1; }
+.ea-kpi__sub { font-family: var(--mono); font-weight: 300; font-size: 11px; line-height: 1.6; color: var(--dull); margin-top: 10px; }
+/* Needs attention: polished silver and a short rule before the label. No colour. */
+.ea-kpi.is-alert .ea-kpi__value { color: var(--bright); }
+.ea-kpi.is-alert .ea-kpi__label { color: var(--bright); }
+.ea-kpi.is-alert .ea-kpi__label::before {
+  content: ""; display: inline-block; width: 16px; height: 1px; margin: 0 8px 0 0;
+  background: var(--bright); vertical-align: middle;
+}
+
+/* ---- charts ---------------------------------------------------------------------- */
+.ea-chart-head h3 {
+  margin: 0; padding: 0;
+  font-family: var(--serif); font-optical-sizing: auto; font-size: 24px; font-weight: 500;
+  line-height: 1.15; color: var(--bright);
+}
+.ea-chart-head p { font-size: 13.5px; line-height: 1.55; color: var(--dull); margin: 8px 0 0; max-width: 62ch; }
+.ea-takeaway { font-size: 14px; line-height: 1.6; color: var(--silver); max-width: 68ch; }
+.ea-source { font-family: var(--mono); font-size: 10.5px; color: var(--faint); }
+
+/* ---- sidebar -------------------------------------------------------------------- */
+[data-testid="stSidebar"] {
+  background: var(--night-deep) var(--grain);
+  border-right: 1px solid var(--hairline);
+}
+[data-testid="stSidebarNavLink"] { border-radius: 0; }
+[data-testid="stSidebarNavLink"] span { font-family: var(--sans); font-size: 14px; color: var(--dull); }
+[data-testid="stSidebarNavLink"][aria-current="page"] { background: transparent; }
+[data-testid="stSidebarNavLink"][aria-current="page"] span { color: var(--bright); }
+[data-testid="stSidebarNavLink"]:hover { background: rgba(214, 211, 206, .04); }
+[data-testid="stSidebarNavSeparator"] { border-color: var(--hairline); }
+
+[data-testid="stWidgetLabel"] p { font-family: var(--sans); font-size: 12px; font-weight: 400; color: var(--dull); }
+[data-baseweb="select"] > div {
+  border-radius: 2px; background: var(--raised); border: 1px solid var(--hairline);
+  font-family: var(--sans); font-size: 13.5px;
+}
+.stButton > button, .stDownloadButton > button {
+  border-radius: 2px; border: 1px solid var(--hairline); background: transparent; box-shadow: none; color: var(--silver);
+}
+.stButton > button p, .stDownloadButton > button p { font-family: var(--sans); font-size: 13px; }
+.stButton > button:hover, .stDownloadButton > button:hover { border-color: var(--silver); color: var(--bright); background: transparent; }
+.ea-side-note { font-family: var(--mono); font-weight: 300; font-size: 11px; color: var(--dull); }
+.ea-side-notice {
+  margin-top: 24px; padding-top: 12px; border-top: 1px solid var(--hairline);
+  font-family: var(--mono); font-weight: 300; font-size: 11px; line-height: 1.6; color: var(--dull);
+}
+
+/* ---- tables --------------------------------------------------------------------- */
+.ea-table-wrap { overflow: auto; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); max-width: 100%; }
+.ea-table {
+  width: 100%; border-collapse: collapse; font-family: var(--mono); font-weight: 300;
+  font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--silver);
+}
+.ea-table th {
+  position: sticky; top: 0; background: var(--night); text-align: left;
+  font-family: var(--sans); font-weight: 400; font-size: 12px; color: var(--dull);
+  padding: 10px 14px; border-bottom: 1px solid var(--hairline); white-space: nowrap;
+}
+.ea-table td { padding: 9px 14px; border-bottom: 1px solid var(--hairline); white-space: nowrap; }
+.ea-table tr:last-child td { border-bottom: none; }
+.ea-table .num { text-align: right; }
+.ea-table tbody tr:hover td { background: rgba(214, 211, 206, .035); }
+
+/* ---- query explorer ---------------------------------------------------------------- */
+.ea-qmeta { font-size: 14px; color: var(--dull); line-height: 1.65; max-width: 84ch; }
+.ea-qmeta b { color: var(--bright); font-weight: 500; }
+.ea-params { font-family: var(--mono); font-weight: 300; font-size: 11px; color: var(--dull); }
+[data-testid="stCode"] pre, [data-testid="stCode"] code { font-family: var(--mono) !important; font-size: 12px !important; }
+[data-testid="stCode"] pre { border: 1px solid var(--hairline); border-radius: 2px; background: var(--night-deep) !important; }
+/* Monochrome SQL: keywords polished, the rest brushed, comments dull. */
+[data-testid="stCode"] code span { color: var(--silver) !important; }
+[data-testid="stCode"] code .token.keyword,
+[data-testid="stCode"] code .token.function,
+[data-testid="stCode"] code .token.builtin { color: var(--bright) !important; }
+[data-testid="stCode"] code .token.comment { color: var(--dull) !important; font-style: italic; }
+[data-testid="stCode"] code .linenumber { color: var(--faint) !important; }
+
+/* ---- misc ------------------------------------------------------------------------- */
+.ea-meta { font-family: var(--mono); font-weight: 300; font-size: 11.5px; line-height: 1.6; color: var(--dull); }
+.ea-object { font-family: var(--mono); font-weight: 300; font-size: 12.5px; line-height: 1.7; color: var(--dull); }
+.ea-object b { font-weight: 400; color: var(--bright); }
+.ea-empty {
+  padding: 28px 0; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline);
+  font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--dull);
+}
+
+/* ---- narrow windows --------------------------------------------------------------- */
+/* Side-by-side charts stack well before Streamlit's default 640px breakpoint,
+   so no chart is squeezed narrower than its labels. */
+@media (max-width: 1100px) {
+  [data-testid="stHorizontalBlock"] { flex-wrap: wrap; row-gap: 40px; }
+  [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+    width: 100% !important; flex: 1 1 100% !important; min-width: 100% !important;
+  }
+}
+@media (max-width: 900px) {
+  .block-container, [data-testid="stMainBlockContainer"] { padding: 28px 18px 64px; }
+  .ea-page-head { flex-direction: column; align-items: flex-start; margin-top: 36px; }
+  .ea-page-head h1 { font-size: 44px; }
+  .ea-page-head__stamp { text-align: left; }
+  .ea-kpi { flex-basis: 40%; }
+  .ea-kpi:nth-child(2n) { border-right: none; margin-right: 0; }
+  .ea-kpi__value, .ea-kpi:first-child .ea-kpi__value { font-size: 34px; }
+}
